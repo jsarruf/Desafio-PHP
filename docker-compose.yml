@@ -1,0 +1,31 @@
+services:
+  app:
+    build: .
+    container_name: desafio-php-app
+    ports: ["8000:8000"]
+    env_file: .env
+    depends_on: [mysql, gateways]
+    volumes:
+      - ./overlay:/overlay
+  mysql:
+    image: mysql:8
+    container_name: desafio-php-mysql
+    environment:
+      MYSQL_DATABASE: gateways
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    # Changed host port to 3307 to avoid conflicts with local MySQL installations
+    ports: ["3307:3306"]
+    volumes:
+      - db:/var/lib/mysql
+  gateways:
+    image: matheusprotzen/gateways-mock
+    container_name: desafio-php-gateways-mock
+    # environment:
+    #   REMOVE_AUTH: "true"
+    ports:
+      - "3001:3001"
+      - "3002:3002"
+volumes:
+  db:
